@@ -12,6 +12,7 @@ module Appraisal
     def initialize
       @sources = []
       @ruby_version = nil
+      @ruby_kwargs = nil
       @dependencies = DependencyList.new
       @gemspecs = []
       @groups = {}
@@ -65,8 +66,9 @@ module Appraisal
       end
     end
 
-    def ruby(ruby_version)
+    def ruby(ruby_version = nil, **kwargs)
       @ruby_version = ruby_version
+      @ruby_kwargs = kwargs
     end
 
     def git(source, options = {}, &block)
@@ -110,11 +112,15 @@ module Appraisal
     alias_method :source_entry_for_dup, :source_entry
 
     def ruby_version_entry
-      return unless @ruby_version
+      if @ruby_version
+        case @ruby_version
+        when String then return "ruby #{@ruby_version.inspect}"
+        else return "ruby(#{@ruby_version.inspect})"
+        end
+      end
 
-      case @ruby_version
-      when String then "ruby #{@ruby_version.inspect}"
-      else "ruby(#{@ruby_version.inspect})"
+      if @ruby_kwargs && @ruby_kwargs.keys.size.positive?
+        "ruby #{@ruby_kwargs}"
       end
     end
 
