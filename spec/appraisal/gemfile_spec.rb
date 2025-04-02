@@ -447,10 +447,13 @@ RSpec.describe Appraisal::Gemfile do
     gemfile.ruby file: ".ruby-version"
     gemfile.source "one"
 
+    ruby_version = gemfile.instance_variable_get("@ruby_version")
+    expected = ruby_version.is_a?(String) ? "ruby #{ruby_version.inspect}" : "ruby(#{ruby_version.inspect})"
+
     expect(gemfile.to_s).to eq <<-GEMFILE.strip_heredoc.strip
       source "one"
 
-      ruby {:file=>".ruby-version"}
+      #{expected}
     GEMFILE
   end
 end
